@@ -1,0 +1,213 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+        "Description": "Used to create VPCs",
+        "Metadata": {
+    
+        },
+        "Parameters": {
+        
+        "AZA": {
+            "Description": "For AZA",
+            "Type": "AWS::EC2::AvailabilityZone::Name"
+        },
+
+        
+        "AZB": {
+          "Description": "For AZA",
+          "Type": "AWS::EC2::AvailabilityZone::Name"
+        },
+        
+        
+        "PubSub1CIDR": {
+            "Description": "For public subnet 1",
+            "Type": "String"
+        },
+        
+        "PubSub2CIDR": {
+          "Description": "For public subnet 2",
+          "Type": "String"
+      },
+
+      "PrtSub1CIDR": {
+        "Description": "For the private subnet",
+        "Type": "String"
+    },
+
+    
+    "VPCCIDR": {
+        "Description": "For the VPC",
+        "Type": "String"
+    }
+    
+        
+        },
+        "Mappings": {
+    
+        },
+        "Conditions": {
+    
+        },
+        "Resources": { 
+        "DevVpc": {
+          "Type": "AWS::EC2::VPC",
+          "Properties": {
+            "CidrBlock": { "Ref": "VPCCIDR" },
+            "Tags":[{ "Key": "name", "Value":  "DevVpc" }]
+          }
+        },
+        
+        "DevVpcIgw": {
+          "Type": "AWS::EC2::InternetGateway",
+          "Properties": {
+            "Tags":[{ "Key": "name", "Value":  "DevVpcIgw" }]
+          }
+        },
+        "AttachGateway": {
+          "Type": "AWS::EC2::VPCGatewayAttachment",
+          "Properties": {
+            "VpcId": { "Ref": "DevVpc" },
+            "InternetGatewayId": { "Ref": "DevVpcIgw" }
+          }
+        },
+        
+        "DevVpcPubSubRtb": {
+          "Type": "AWS::EC2::RouteTable",
+          "Properties": {
+            "VpcId": { "Ref": "DevVpc" },
+            "Tags":[{ "Key": "name", "Value":  "DevVpcPubSubRtb" }]
+          }
+        },
+        
+        "PubRt": {
+          "Type": "AWS::EC2::Route",
+          "Properties": {
+            "RouteTableId": { "Ref": "DevVpcPubSubRtb" },
+            "DestinationCidrBlock": "0.0.0.0/0",
+            "GatewayId": { "Ref": "DevVpcIgw" }
+          }
+        },
+        
+        "PubSubAss1": {
+          "Type": "AWS::EC2::SubnetRouteTableAssociation",
+          "Properties": {
+            "SubnetId": { "Ref": "DevVpcPubSub1" },
+            "RouteTableId": { "Ref": "DevVpcPubSubRtb" }
+          }
+        },
+        "PubSubAss2": {
+          "Type": "AWS::EC2::SubnetRouteTableAssociation",
+          "Properties": {
+            "SubnetId": { "Ref": "DevVpcPubSub2" },
+            "RouteTableId": { "Ref": "DevVpcPubSubRtb" }
+          }
+        },
+        
+        
+        
+        
+    
+    "DevVpcPubSub1": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "MapPublicIpOnLaunch": "true",
+        "AvailabilityZone": { "Ref": "AZA" },
+        "VpcId": { "Ref": "DevVpc" },
+        "CidrBlock": { "Ref": "PubSub1CIDR" },
+        "Tags":[{ "Key": "name", "Value":  "DevVpcPubSub1" }]
+      }
+    },
+    
+    "DevVpcPrtSub1": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "AvailabilityZone": { "Ref": "AZB" },
+        "VpcId": { "Ref": "DevVpc" },
+        "CidrBlock": { "Ref": "PrtSub1CIDR" },
+        "Tags":[{ "Key": "name", "Value":  "DevVpcPrtSub1" }]
+      }
+    },
+    
+    
+    "DevVpcPubSub2": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "MapPublicIpOnLaunch": "true",
+        "AvailabilityZone": { "Ref": "AZA" },
+        "VpcId": { "Ref": "DevVpc" },
+        "CidrBlock": { "Ref": "PubSub2CIDR" },
+        "Tags":[{ "Key": "name", "Value":  "DevVpcPubSub2" }]
+      }
+    },
+    
+    
+    "webserver": {
+        "Type": "AWS::EC2::Instance",
+        "Properties": {
+            "KeyName": "WebServer",
+            "DisableApiTermination": "false",
+            "ImageId": "ami-0b5eea76982371e91",
+            "InstanceType": "t2.micro",
+            "Monitoring": "false",
+            "SecurityGroupIds" : [{ "Ref": "webserversg" }],
+            "Tags": [{"Key": "name","Value": "webserver"}],
+            "SubnetId":{"Ref":"DevVpcPubSub1"}
+            }
+    },
+
+    
+    "webserversg" : {
+      "Type" : "AWS::EC2::SecurityGroup",
+      "Properties" : {
+        "GroupDescription" : "Used for my webserver",
+        "SecurityGroupIngress" : [{
+          "IpProtocol": "tcp",
+              "FromPort": 80,
+              "ToPort": 80,
+              "CidrIp": "0.0.0.0/0"
+          },
+          {
+              "IpProtocol": "tcp",
+              "FromPort": 443,
+              "ToPort": 443,
+              "CidrIp": "0.0.0.0/0"
+          },
+          {
+              "IpProtocol": "tcp",
+              "FromPort": 22,
+              "ToPort": 22,
+              "CidrIp": "0.0.0.0/0"
+          },
+          {
+            "IpProtocol": "tcp",
+              "FromPort": 3389,
+              "ToPort": 3389,
+              "CidrIp": "0.0.0.0/0"
+      }],
+        "VpcId" : { "Ref": "DevVpc" },
+        "Tags": [{"Key": "name","Value": "webserversg"}]
+      }
+    },
+    
+            
+
+
+    "DevVpcPrtSub2": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "AvailabilityZone": "us-east-1b",
+        "VpcId": { "Ref": "DevVpc" },
+        "CidrBlock": "10.5.224.0/19",
+        "Tags":[{ "Key": "name", "Value":  "DevVpcPrtSub2" }]
+      }
+    }
+    
+    
+    
+    
+    
+    
+        },
+        "Outputs": {
+    
+        }
+    }

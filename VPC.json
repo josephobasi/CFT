@@ -1,0 +1,52 @@
+{
+"AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "Used to create VPCs",
+    "Metadata": {
+
+    },
+    "Parameters": {
+    
+    },
+    "Mappings": {
+
+    },
+    "Conditions": {
+
+    },
+    "Resources": { 
+    "VPC-VSCode": {
+      "Type": "AWS::EC2::VPC",
+      "Properties": {
+        "CidrBlock": "10.5.0.0/16",
+        "Tags":[{ "key": "name", "Value":  "VPC_VSCode" }]
+      }
+    },
+    
+
+"VPC-VSCode_PubSub1": {
+  "Type": "AWS::EC2::Subnet",
+  "Properties": {
+    "AvailabilityZone": "us-east-1a",
+    "VpcId": { "Ref": "VPC-VSCode" },
+    "CidrBlock": "10.5.0.0/17",
+    "Tags":[{ "key": "name", "Value":  "VPC-VSCode_PubSub1" }]
+  }
+},
+
+"VPC-VSCode_PubSub2": {
+  "Type": "AWS::EC2::Subnet",
+  "Properties": {
+    "AvailabilityZone": "us-east-1b",
+    "VpcId": { "Ref": "VPC-VSCode" },
+    "CidrBlock": "10.5.128.0/17",
+    "Tags":[{ "key": "name", "Value":  "VPC-VSCode_PubSub2" }]
+  }
+}
+
+
+
+    },
+    "Outputs": {
+
+    }
+}
