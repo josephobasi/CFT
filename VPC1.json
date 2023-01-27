@@ -8,35 +8,41 @@
         
         "AZA": {
             "Description": "For AZA",
-            "Type": "AWS::EC2::AvailabilityZone::Name"
+            "Type": "AWS::EC2::AvailabilityZone::Name",
+            "Default": "us-east-1a"
         },
 
         
         "AZB": {
           "Description": "For AZA",
-          "Type": "AWS::EC2::AvailabilityZone::Name"
+          "Type": "AWS::EC2::AvailabilityZone::Name",
+          "Default": "us-east-1b"
         },
         
         
         "PubSub1CIDR": {
             "Description": "For public subnet 1",
-            "Type": "String"
+            "Type": "String",
+            "Default": "10.0.1.0/24"
         },
         
         "PubSub2CIDR": {
           "Description": "For public subnet 2",
-          "Type": "String"
+          "Type": "String",
+          "Default": "10.0.2.0/24"
       },
 
       "PrtSub1CIDR": {
         "Description": "For the private subnet",
-        "Type": "String"
+        "Type": "String",
+        "Default": "10.0.3.0/24"
     },
 
     
     "VPCCIDR": {
         "Description": "For the VPC",
-        "Type": "String"
+        "Type": "String",
+        "Default": "10.0.0.0/16"
     }
     
         
