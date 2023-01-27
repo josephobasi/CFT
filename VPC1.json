@@ -192,20 +192,12 @@
         "VpcId" : { "Ref": "DevVpc" },
         "Tags": [{"Key": "name","Value": "webserversg"}]
       }
-    },
+    }
     
             
 
 
-    "DevVpcPrtSub2": {
-      "Type": "AWS::EC2::Subnet",
-      "Properties": {
-        "AvailabilityZone": "us-east-1b",
-        "VpcId": { "Ref": "DevVpc" },
-        "CidrBlock": "10.5.224.0/19",
-        "Tags":[{ "Key": "name", "Value":  "DevVpcPrtSub2" }]
-      }
-    }
+
     
     
     
